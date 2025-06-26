@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5557636319151894994
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7287387473459979607}
+  - component: {fileID: 5249221759532631688}
+  - component: {fileID: 136471532293445972}
+  - component: {fileID: 4305783493666599792}
+  - component: {fileID: 7259264859733484631}
+  - component: {fileID: 912699972915939932}
+  - component: {fileID: 4374324316306944599}
+  m_Layer: 0
+  m_Name: RosConnector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7287387473459979607
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557636319151894994}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.72382426, y: 0.027542405, z: -0.13713077}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5249221759532631688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557636319151894994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff98778ae051cfd40a6e4effdf851ebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedRosVersion: 1
+  SecondsTimeout: 10
+  Serializer: 0
+  protocol: 0
+  RosBridgeServerUrl: ws://192.168.56.102:9090
+--- !u!114 &136471532293445972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557636319151894994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8346600dd4db234680344092ad74320, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UrdfRobot: {fileID: 0}
+--- !u!114 &4305783493666599792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557636319151894994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aae1d8da5a3c0644bb98a540ca597dfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /joint_states
+  JointStateReaders:
+  - {fileID: 0}
+  - {fileID: 0}
+  FrameId: Unity
+--- !u!114 &7259264859733484631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557636319151894994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3b5c497c54f1b4ab2a96f69bc1586d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /joy
+  TimeStep: 0
+  EnsureThreadSafety: 0
+  joyButtonWriters: []
+  joyAxisWriters:
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &912699972915939932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557636319151894994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa23b622c60c13f48bdfa74b2e974f20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /odom
+  PublishedTransform: {fileID: 0}
+  FrameId: Unity
+--- !u!114 &4374324316306944599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557636319151894994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a908e83b1e7ce9e428caae2838615cc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Topic: /unity_image/compressed
+  ImageCamera: {fileID: 0}
+  FrameId: Camera
+  resolutionWidth: 640
+  resolutionHeight: 480
+  qualityLevel: 50
