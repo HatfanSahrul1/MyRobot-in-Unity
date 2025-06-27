@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Sensor;
@@ -11,7 +9,7 @@ public class LidarSensor : MonoBehaviour
     // Pengaturan Sensor
     public string frameId = "laser_link";
     public float range = 10f; // Jarak maksimum sensor
-    [Range(1, 720)] // Batasi jumlah ray agar tidak terlalu berat
+    [Range(1, 720)]
     public int numRays = 360; // Jumlah tembakan raycast dalam 360 derajat
     public float scanRateHz = 10f; // Seberapa sering sensor memindai (Hz)
 
@@ -22,13 +20,10 @@ public class LidarSensor : MonoBehaviour
 
     void Start()
     {
-        // Dapatkan koneksi ROS
         ros = ROSConnection.GetOrCreateInstance();
-        // Daftarkan topik yang akan kita publikasikan
         ros.RegisterPublisher<LaserScanMsg>("/scan");
 
         scanPeriod = 1.0f / scanRateHz;
-        // Inisialisasi ulang array jika numRays berubah di inspector
         if (ranges == null || ranges.Length != numRays)
         {
             ranges = new float[numRays];
@@ -37,7 +32,6 @@ public class LidarSensor : MonoBehaviour
 
     void Update()
     {
-        // Hanya jalankan jika aplikasi sedang Play
         if (!Application.isPlaying) return;
 
         timeSinceLastScan += Time.deltaTime;
@@ -53,7 +47,6 @@ public class LidarSensor : MonoBehaviour
     {
         float angleStep = 360.0f / numRays;
         
-        // Lakukan raycast untuk setiap sudut
         for (int i = 0; i < numRays; i++)
         {
             float currentAngle = angleStep * i;
@@ -62,31 +55,26 @@ public class LidarSensor : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, direction, out hit, range))
             {
-                // Jika raycast mengenai sesuatu, catat jaraknya
                 ranges[i] = hit.distance;
             }
             else
             {
-                // Jika tidak, catat sebagai jarak maksimum (atau tak terhingga)
-                ranges[i] = range; // Lebih aman untuk SLAM daripada infinity
+                ranges[i] = range;
             }
         }
         
-        // **PERBAIKAN TIMESTAMP:** Membuat timestamp secara manual tanpa Unity.Robots.Core
         var timeNow = Time.timeAsDouble;
         uint secs = (uint)timeNow;
         uint nsecs = (uint)((timeNow - secs) * 1e9);
+        
+        // **PERBAIKAN UTAMA:** 'nanosec' diisi langsung dengan 'nsecs' (tipe uint)
         var timestamp = new TimeMsg
         {
-            sec = secs,
-            nanosec = nsecs
+            sec = (int)secs,
+            nanosec = nsecs // <-- Dihapus cast (int) yang salah
         };
         
-        HeaderMsg header = new HeaderMsg
-        {
-            stamp = timestamp,
-            frame_id = frameId
-        };
+        HeaderMsg header = new HeaderMsg(timestamp, frameId);
         
         LaserScanMsg scanMessage = new LaserScanMsg
         {
@@ -105,11 +93,8 @@ public class LidarSensor : MonoBehaviour
         ros.Publish("/scan", scanMessage);
     }
 
-    // **FITUR BARU: VISUALISASI GIZMOS**
-    // Fungsi ini akan menggambar visualisasi di Scene Editor
     void OnDrawGizmosSelected()
     {
-        // Inisialisasi ulang array jika numRays berubah di inspector
         if (ranges == null || ranges.Length != numRays)
         {
             ranges = new float[numRays];
@@ -117,11 +102,9 @@ public class LidarSensor : MonoBehaviour
 
         float angleStep = 360.0f / numRays;
 
-        // Gambar lingkaran jangkauan maksimum
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, range);
 
-        // Gambar raycast-nya
         for (int i = 0; i < numRays; i++)
         {
             float currentAngle = angleStep * i;
@@ -130,13 +113,11 @@ public class LidarSensor : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, direction, out hit, range))
             {
-                // Jika kena, gambar garis hijau sampai titik kena
                 Gizmos.color = Color.green;
                 Gizmos.DrawLine(transform.position, hit.point);
             }
             else
             {
-                // Jika tidak kena, gambar garis merah sampai jarak maksimum
                 Gizmos.color = Color.red;
                 Gizmos.DrawRay(transform.position, direction * range);
             }
