@@ -1,17 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Nav;
 using RosMessageTypes.Geometry;
 using RosMessageTypes.Std;
 using RosMessageTypes.BuiltinInterfaces;
+// PENTING: Directive ini WAJIB ada
+using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 
 public class OdometryPublisher : MonoBehaviour
 {
     // Variabel
     public string odomFrameId = "odom";
-    public string baseFrameId = "base_link"; // Nama frame robot
+    public string baseFrameId = "base_link";
     public float publishRateHz = 20f;
 
     private ROSConnection ros;
@@ -31,10 +31,9 @@ public class OdometryPublisher : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Hanya jalankan jika aplikasi sedang Play
         if (!Application.isPlaying) return;
 
-        if (Time.time - lastPublishTime > publishPeriod)
+        if (Time.time >= lastPublishTime + publishPeriod)
         {
             PublishOdometry();
             lastPublishTime = Time.time;
@@ -43,60 +42,46 @@ public class OdometryPublisher : MonoBehaviour
 
     private void PublishOdometry()
     {
-        // **PERBAIKAN TIMESTAMP:** Membuat timestamp secara manual
         var timeNow = Time.timeAsDouble;
         uint secs = (uint)timeNow;
         uint nsecs = (uint)((timeNow - secs) * 1e9);
-        var timestamp = new TimeMsg
-        {
-            sec = secs,
-            nanosec = nsecs
-        };
+        var timestamp = new TimeMsg { sec = (int)secs, nanosec = nsecs };
+        var header = new HeaderMsg(timestamp, odomFrameId);
+
+        // === PERBAIKAN UTAMA: Menghapus prefix 'ROSGeometry.' ===
+        // Karena sudah ada 'using' di atas, kita panggil tipe datanya langsung.
+
+        // --- Konversi POSE ---
+        // Konversi posisi Unity ke tipe penerjemah 'Point'
+        var rosPosition = transform.position.To<FLU>();
         
-        // Isi Header
-        HeaderMsg header = new HeaderMsg
+        // Konversi rotasi Unity ke tipe penerjemah 'Quaternion'
+        var rosOrientation = transform.rotation.To<FLU>();
+
+        var poseMsg = new PoseMsg
         {
-            stamp = timestamp,
-            frame_id = odomFrameId
+            position = new PointMsg(rosPosition.x, rosPosition.y, rosPosition.z),
+            orientation = new QuaternionMsg(rosOrientation.x, rosOrientation.y, rosOrientation.z, rosOrientation.w)
         };
 
-        // Buat pesan Odometry
-        OdometryMsg odomMsg = new OdometryMsg
+        // --- Konversi TWIST ---
+        // Konversi kecepatan linear Unity ke tipe penerjemah 'Vector3'
+        var rosLinearVelocity = rb.velocity.To<FLU>();
+        var rosAngularVelocity = rb.angularVelocity.To<FLU>();
+
+        var twistMsg = new TwistMsg
+        {
+            linear = new Vector3Msg(rosLinearVelocity.x, rosLinearVelocity.y, rosLinearVelocity.z),
+            angular = new Vector3Msg(rosAngularVelocity.x, rosAngularVelocity.y, rosAngularVelocity.z)
+        };
+
+        // --- Rakit Pesan Odometry Final ---
+        var odomMsg = new OdometryMsg
         {
             header = header,
-            child_frame_id = baseFrameId
-        };
-        
-        // **PERBAIKAN KONVERSI:** Manual conversion tanpa extension methods
-        // Isi Pose (Posisi & Rotasi)
-        odomMsg.pose.pose.position = new PointMsg
-        {
-            x = transform.position.x,
-            y = transform.position.y,
-            z = transform.position.z
-        };
-        
-        odomMsg.pose.pose.orientation = new QuaternionMsg
-        {
-            x = transform.rotation.x,
-            y = transform.rotation.y,
-            z = transform.rotation.z,
-            w = transform.rotation.w
-        };
-        
-        // Isi Twist (Kecepatan Linear & Angular)
-        odomMsg.twist.twist.linear = new Vector3Msg
-        {
-            x = rb.velocity.x,
-            y = rb.velocity.y,
-            z = rb.velocity.z
-        };
-        
-        odomMsg.twist.twist.angular = new Vector3Msg
-        {
-            x = rb.angularVelocity.x,
-            y = rb.angularVelocity.y,
-            z = rb.angularVelocity.z
+            child_frame_id = baseFrameId,
+            pose = new PoseWithCovarianceMsg { pose = poseMsg },
+            twist = new TwistWithCovarianceMsg { twist = twistMsg }
         };
         
         ros.Publish("/odom", odomMsg);
