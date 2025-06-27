@@ -513,6 +513,8 @@ GameObject:
   - component: {fileID: 1131288602}
   - component: {fileID: 1131288603}
   - component: {fileID: 1131288604}
+  - component: {fileID: 1131288606}
+  - component: {fileID: 1131288605}
   m_Layer: 0
   m_Name: SimpleBot
   m_TagString: Untagged
@@ -576,7 +578,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7acef0b79454c9b4dae3f8139bc4ba77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RosIPAddress: 10.252.111.208
+  m_RosIPAddress: localhost
   m_RosPort: 10000
   m_ConnectOnStart: 1
   m_KeepaliveTime: 1
@@ -586,6 +588,35 @@ MonoBehaviour:
   m_TFTopics:
   - /tf
   listenForTFMessages: 1
+--- !u!114 &1131288605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1131288601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f44aff6899befd47878256fb315d1df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  odomFrameId: odom
+  baseFrameId: base_link
+  publishRateHz: 20
+--- !u!114 &1131288606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1131288601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9579ab074a6cdae48b86116b021be845, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  linearSpeed: 0.2
+  angularSpeed: 50
 --- !u!1 &1306215912
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,7 +630,7 @@ GameObject:
   - component: {fileID: 1306215915}
   - component: {fileID: 1306215914}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -899,6 +930,7 @@ GameObject:
   - component: {fileID: 1971763133}
   - component: {fileID: 1971763136}
   - component: {fileID: 1971763135}
+  - component: {fileID: 1971763137}
   m_Layer: 0
   m_Name: lidar
   m_TagString: Untagged
@@ -971,6 +1003,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1971763132}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1971763137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1971763132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a08f263fa2aa374468e9bf7aed0b9843, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frameId: laser_link
+  range: 10
+  numRays: 360
+  scanRateHz: 10
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
